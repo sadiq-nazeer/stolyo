@@ -6,7 +6,7 @@ This document outlines the development plan for the platform. We will tackle fea
 
 - [ ] **User Management & Authentication**
   - [x] Setup authentication (Login, Register, Logout)
-  - [ ] Implement role-based access control (RBAC) for vendors and admins.
+  - [x] Implement role-based access control (RBAC) for vendors and admins.
   - [x] Create user profile page.
 
 - [ ] **Database & API Setup**
