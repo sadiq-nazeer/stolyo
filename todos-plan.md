@@ -38,7 +38,7 @@ This document outlines the development plan for the platform. We will tackle fea
 
 - [x] **Shopping & Checkout**
   - [x] Implement a shopping cart.
-  - [ ] Create a multi-step checkout process (Address, Payment, Confirmation).
+  - [x] Create a multi-step checkout process (Address, Payment, Confirmation).
   - [ ] Integrate a payment gateway.
 
 ## Phase 4: Advanced Features

@@ -11,6 +11,9 @@ import VendorDashboard from "./pages/VendorDashboard";
 import ProductManagement from "./pages/ProductManagement";
 import OrderManagement from "./pages/OrderManagement";
 import Marketplace from "./pages/Marketplace";
+import Checkout from "./pages/Checkout";
+import OrderConfirmation from "./pages/OrderConfirmation";
+import MyOrders from "./pages/MyOrders";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import MainLayout from "./components/MainLayout";
@@ -31,8 +34,17 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route
+                  path="/order-confirmation/:orderId"
+                  element={<OrderConfirmation />}
+                />
+                <Route path="/my-orders" element={<MyOrders />} />
                 <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-                <Route path="/vendor/products" element={<ProductManagement />} />
+                <Route
+                  path="/vendor/products"
+                  element={<ProductManagement />}
+                />
                 <Route path="/vendor/orders" element={<OrderManagement />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

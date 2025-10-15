@@ -12,6 +12,7 @@ import { ShoppingCart, Trash2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { ScrollArea } from "./ui/scroll-area";
 import { Separator } from "./ui/separator";
+import { useNavigate } from "react-router-dom";
 
 export const CartSheet = () => {
   const {
@@ -21,6 +22,7 @@ export const CartSheet = () => {
     updateQuantity,
     cartTotal,
   } = useCart();
+  const navigate = useNavigate();
 
   return (
     <Sheet>
@@ -97,7 +99,11 @@ export const CartSheet = () => {
                   <span>Subtotal</span>
                   <span>${cartTotal.toFixed(2)}</span>
                 </div>
-                <Button className="w-full" size="lg">
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={() => navigate("/checkout")}
+                >
                   Proceed to Checkout
                 </Button>
               </div>

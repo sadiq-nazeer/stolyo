@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { LayoutGrid, LogOut, User as UserIcon } from "lucide-react";
+import { LayoutGrid, LogOut, User as UserIcon, Package } from "lucide-react";
 import { CartSheet } from "./CartSheet";
 
 const Header = () => {
@@ -66,6 +66,10 @@ const Header = () => {
                 <DropdownMenuItem onClick={() => navigate("/profile")}>
                   <UserIcon className="mr-2 h-4 w-4" />
                   <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/my-orders")}>
+                  <Package className="mr-2 h-4 w-4" />
+                  <span>My Orders</span>
                 </DropdownMenuItem>
                 {(profile.role === "vendor" || profile.role === "admin") && (
                   <DropdownMenuItem onClick={() => navigate("/vendor/dashboard")}>
