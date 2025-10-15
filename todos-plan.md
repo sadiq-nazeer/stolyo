@@ -10,7 +10,7 @@ This document outlines the development plan for the platform. We will tackle fea
   - [x] Create user profile page.
 
 - [ ] **Database & API Setup**
-  - [ ] Design initial database schema for Users, Products, and Orders.
+  - [x] Design initial database schema for Users, Products, and Orders.
   - [ ] Set up the basic API structure.
 
 ## Phase 2: Business Operations (Vendor Dashboard)
