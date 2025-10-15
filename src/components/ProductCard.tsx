@@ -40,7 +40,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       className="flex flex-col overflow-hidden cursor-pointer"
       onClick={() => navigate(`/product/${product.id}`)}
     >
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 relative">
         <div className="aspect-video bg-gray-100 flex items-center justify-center">
           <img
             src={product.image_url || "/placeholder.svg"}
@@ -48,6 +48,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             className="object-cover w-full h-full"
           />
         </div>
+        {product.stock_quantity === 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute top-2 right-2"
+          >
+            Out of Stock
+          </Badge>
+        )}
       </CardHeader>
       <CardContent className="flex-grow p-4 space-y-2">
         <CardTitle className="text-lg">{product.name}</CardTitle>
@@ -55,15 +63,20 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           <p className="text-xl font-semibold">${product.price.toFixed(2)}</p>
           <p className="text-sm text-muted-foreground">Sold by {vendorName}</p>
         </div>
-        {product.categories?.name && (
-          <Badge variant="secondary">{product.categories.name}</Badge>
-        )}
+        <div className="flex gap-2">
+          {product.categories?.name && (
+            <Badge variant="outline">{product.categories.name}</Badge>
+          )}
+          {product.stock_quantity > 0 && product.stock_quantity <= 10 && (
+            <Badge variant="secondary">Low Stock</Badge>
+          )}
+        </div>
       </CardContent>
       <CardFooter className="p-4 pt-0">
         <Button
           className="w-full"
           onClick={handleAddToCart}
-          disabled={isAdding}
+          disabled={isAdding || product.stock_quantity === 0}
         >
           <ShoppingCart className="mr-2 h-4 w-4" />
           {isAdding ? "Adding..." : "Add to Cart"}

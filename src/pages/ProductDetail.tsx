@@ -40,6 +40,31 @@ const ProductDetail = () => {
     fetchProduct();
   }, [productId]);
 
+  // Listen for real-time updates to this specific product
+  useEffect(() => {
+    if (!productId) return;
+
+    const channel = supabase
+      .channel(`product-updates-${productId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "products",
+          filter: `id=eq.${productId}`,
+        },
+        (payload) => {
+          setProduct(payload.new as Product);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [productId]);
+
   const handleAddToCart = async () => {
     if (!product) return;
     setIsAdding(true);
@@ -102,6 +127,17 @@ const ProductDetail = () => {
           <p className="text-sm text-muted-foreground">Sold by {vendorName}</p>
           <p className="text-3xl font-bold">${product.price.toFixed(2)}</p>
           <p className="text-muted-foreground">{product.description}</p>
+          <p
+            className={`text-lg font-medium ${
+              product.stock_quantity === 0 ? "text-destructive" : ""
+            }`}
+          >
+            {product.stock_quantity > 10
+              ? "In Stock"
+              : product.stock_quantity > 0
+              ? `Only ${product.stock_quantity} left!`
+              : "Out of Stock"}
+          </p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 border rounded-md p-1">
               <Button
@@ -109,6 +145,7 @@ const ProductDetail = () => {
                 size="icon"
                 className="h-8 w-8"
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={product.stock_quantity === 0}
               >
                 <Minus className="h-4 w-4" />
               </Button>
@@ -117,7 +154,10 @@ const ProductDetail = () => {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8"
-                onClick={() => setQuantity(quantity + 1)}
+                onClick={() =>
+                  setQuantity(Math.min(quantity + 1, product.stock_quantity))
+                }
+                disabled={product.stock_quantity === 0}
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -126,10 +166,14 @@ const ProductDetail = () => {
               size="lg"
               className="flex-grow"
               onClick={handleAddToCart}
-              disabled={isAdding}
+              disabled={isAdding || product.stock_quantity === 0}
             >
               <ShoppingCart className="mr-2 h-4 w-4" />
-              {isAdding ? "Adding..." : "Add to Cart"}
+              {isAdding
+                ? "Adding..."
+                : product.stock_quantity === 0
+                ? "Out of Stock"
+                : "Add to Cart"}
             </Button>
           </div>
         </div>

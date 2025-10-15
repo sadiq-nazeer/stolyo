@@ -79,6 +79,33 @@ const Marketplace = () => {
     fetchProducts();
   }, [debouncedSearchTerm, selectedCategory]);
 
+  // Listen for real-time product updates
+  useEffect(() => {
+    const channel = supabase
+      .channel("product-list-updates")
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "products",
+        },
+        (payload) => {
+          const updatedProduct = payload.new as Product;
+          setProducts((currentProducts) =>
+            currentProducts.map((p) =>
+              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p,
+            ),
+          );
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   return (
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold mb-6">Marketplace</h1>
