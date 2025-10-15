@@ -14,6 +14,7 @@ import Marketplace from "./pages/Marketplace";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
+import ProductDetail from "./pages/ProductDetail";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import MainLayout from "./components/MainLayout";
@@ -34,6 +35,7 @@ const App = () => (
                 <Route path="/" element={<Index />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/product/:productId" element={<ProductDetail />} />
                 <Route path="/checkout" element={<Checkout />} />
                 <Route
                   path="/order-confirmation/:orderId"

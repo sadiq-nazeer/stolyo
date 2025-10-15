@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
@@ -19,8 +20,10 @@ interface ProductCardProps {
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
+  const navigate = useNavigate();
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsAdding(true);
     await addToCart(product.id);
     setIsAdding(false);
@@ -33,7 +36,10 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     : "Unknown Vendor";
 
   return (
-    <Card className="flex flex-col overflow-hidden">
+    <Card
+      className="flex flex-col overflow-hidden cursor-pointer"
+      onClick={() => navigate(`/product/${product.id}`)}
+    >
       <CardHeader className="p-0">
         <div className="aspect-video bg-gray-100 flex items-center justify-center">
           <img

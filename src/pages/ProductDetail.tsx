@@ -1,0 +1,141 @@
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Product } from "@/types";
+import { showError } from "@/utils/toast";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingCart, Minus, Plus } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+
+const ProductDetail = () => {
+  const { productId } = useParams<{ productId: string }>();
+  const { addToCart } = useCart();
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!productId) return;
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from("products")
+          .select("*, categories(name), profiles(first_name, last_name)")
+          .eq("id", productId)
+          .single();
+
+        if (error) throw error;
+        setProduct(data);
+      } catch (error: any) {
+        showError("Failed to fetch product details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId]);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+    setIsAdding(true);
+    await addToCart(product.id, quantity);
+    setIsAdding(false);
+  };
+
+  const vendorName = product?.profiles
+    ? `${product.profiles.first_name || ""} ${
+        product.profiles.last_name || ""
+      }`.trim()
+    : "Unknown Vendor";
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-10">
+        <div className="grid md:grid-cols-2 gap-8">
+          <Skeleton className="aspect-square w-full" />
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-3/4" />
+            <Skeleton className="h-6 w-1/4" />
+            <Skeleton className="h-5 w-1/2" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="container mx-auto py-20 text-center">
+        <h2 className="text-2xl font-semibold">Product not found</h2>
+        <p className="text-muted-foreground">
+          The product you're looking for doesn't exist.
+        </p>
+        <Button asChild className="mt-4">
+          <Link to="/marketplace">Back to Marketplace</Link>
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="container mx-auto py-10">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <div className="bg-gray-100 rounded-lg flex items-center justify-center">
+          <img
+            src={product.image_url || "/placeholder.svg"}
+            alt={product.name}
+            className="object-contain w-full h-full max-h-[500px]"
+          />
+        </div>
+        <div className="space-y-4">
+          {product.categories?.name && (
+            <Badge variant="secondary">{product.categories.name}</Badge>
+          )}
+          <h1 className="text-3xl lg:text-4xl font-bold">{product.name}</h1>
+          <p className="text-sm text-muted-foreground">Sold by {vendorName}</p>
+          <p className="text-3xl font-bold">${product.price.toFixed(2)}</p>
+          <p className="text-muted-foreground">{product.description}</p>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 border rounded-md p-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="w-8 text-center font-semibold">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => setQuantity(quantity + 1)}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+            <Button
+              size="lg"
+              className="flex-grow"
+              onClick={handleAddToCart}
+              disabled={isAdding}
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              {isAdding ? "Adding..." : "Add to Cart"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ProductDetail;
