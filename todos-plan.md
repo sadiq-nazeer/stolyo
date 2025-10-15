@@ -11,12 +11,12 @@ This document outlines the development plan for the platform. We will tackle fea
 
 - [ ] **Database & API Setup**
   - [x] Design initial database schema for Users, Products, and Orders.
-  - [ ] Set up the basic API structure.
+  - [x] Set up the basic API structure.
 
 ## Phase 2: Business Operations (Vendor Dashboard)
 
 - [ ] **Inventory Management System**
-  - [ ] Create UI to add, view, edit, and delete products.
+  - [x] Create UI to add, view, edit, and delete products.
   - [ ] Implement logic for tracking stock levels.
   - [ ] Add support for product categories and variants.
 

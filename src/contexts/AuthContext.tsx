@@ -16,6 +16,7 @@ type AuthContextType = {
   user: User | null;
   profile: UserProfile | null;
   signOut: () => void;
+  loading: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -87,6 +88,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user,
     profile,
     signOut,
+    loading,
   };
 
   return (
