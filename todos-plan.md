@@ -34,7 +34,7 @@ This document outlines the development plan for the platform. We will tackle fea
 - [x] **Product Discovery**
   - [x] Create a main marketplace page to display all products.
   - [x] Implement a product detail page.
-  - [ ] Add search and filtering capabilities.
+  - [x] Add search and filtering capabilities.
 
 - [x] **Shopping & Checkout**
   - [x] Implement a shopping cart.
