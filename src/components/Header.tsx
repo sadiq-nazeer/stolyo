@@ -12,6 +12,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { LayoutGrid, LogOut, User as UserIcon, Package } from "lucide-react";
 import { CartSheet } from "./CartSheet";
+import { NotificationBell } from "./NotificationBell";
 
 const Header = () => {
   const { user, profile, signOut } = useAuth();
@@ -38,10 +39,16 @@ const Header = () => {
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <CartSheet />
+          {(profile?.role === "vendor" || profile?.role === "admin") && (
+            <NotificationBell />
+          )}
           {user && profile ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={profile.avatar_url} alt="Avatar" />
                     <AvatarFallback>
@@ -72,7 +79,9 @@ const Header = () => {
                   <span>My Orders</span>
                 </DropdownMenuItem>
                 {(profile.role === "vendor" || profile.role === "admin") && (
-                  <DropdownMenuItem onClick={() => navigate("/vendor/dashboard")}>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/vendor/dashboard")}
+                  >
                     <LayoutGrid className="mr-2 h-4 w-4" />
                     <span>Dashboard</span>
                   </DropdownMenuItem>

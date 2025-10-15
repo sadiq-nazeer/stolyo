@@ -18,6 +18,7 @@ import ProductDetail from "./pages/ProductDetail";
 import VendorAnalytics from "./pages/VendorAnalytics";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
+import { NotificationProvider } from "./contexts/NotificationContext";
 import MainLayout from "./components/MainLayout";
 
 const queryClient = new QueryClient();
@@ -27,34 +28,45 @@ const App = () => (
     <TooltipProvider>
       <AuthProvider>
         <CartProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route element={<MainLayout />}>
-                <Route path="/" element={<Index />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/product/:productId" element={<ProductDetail />} />
-                <Route path="/checkout" element={<Checkout />} />
-                <Route
-                  path="/order-confirmation/:orderId"
-                  element={<OrderConfirmation />}
-                />
-                <Route path="/my-orders" element={<MyOrders />} />
-                <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-                <Route
-                  path="/vendor/products"
-                  element={<ProductManagement />}
-                />
-                <Route path="/vendor/orders" element={<OrderManagement />} />
-                <Route path="/vendor/analytics" element={<VendorAnalytics />} />
-              </Route>
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
+          <NotificationProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<Login />} />
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
+                  <Route
+                    path="/product/:productId"
+                    element={<ProductDetail />}
+                  />
+                  <Route path="/checkout" element={<Checkout />} />
+                  <Route
+                    path="/order-confirmation/:orderId"
+                    element={<OrderConfirmation />}
+                  />
+                  <Route path="/my-orders" element={<MyOrders />} />
+                  <Route
+                    path="/vendor/dashboard"
+                    element={<VendorDashboard />}
+                  />
+                  <Route
+                    path="/vendor/products"
+                    element={<ProductManagement />}
+                  />
+                  <Route path="/vendor/orders" element={<OrderManagement />} />
+                  <Route
+                    path="/vendor/analytics"
+                    element={<VendorAnalytics />}
+                  />
+                </Route>
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </NotificationProvider>
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>
