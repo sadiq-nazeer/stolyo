@@ -1,6 +1,7 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { LineChart } from "lucide-react";
 
 const VendorDashboard = () => {
   return (
@@ -16,6 +17,15 @@ const VendorDashboard = () => {
           </Button>
           <Button asChild size="lg" className="w-full" variant="outline">
             <Link to="/vendor/orders">View Orders</Link>
+          </Button>
+          <Button asChild size="lg" className="w-full" variant="outline">
+            <Link
+              to="/vendor/analytics"
+              className="flex items-center justify-center"
+            >
+              <LineChart className="mr-2 h-5 w-5" />
+              View Analytics
+            </Link>
           </Button>
         </div>
       </div>

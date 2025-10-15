@@ -15,6 +15,7 @@ import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
 import ProductDetail from "./pages/ProductDetail";
+import VendorAnalytics from "./pages/VendorAnalytics";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import MainLayout from "./components/MainLayout";
@@ -48,6 +49,7 @@ const App = () => (
                   element={<ProductManagement />}
                 />
                 <Route path="/vendor/orders" element={<OrderManagement />} />
+                <Route path="/vendor/analytics" element={<VendorAnalytics />} />
               </Route>
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
