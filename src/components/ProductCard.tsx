@@ -9,12 +9,23 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+  const { addToCart } = useCart();
+  const [isAdding, setIsAdding] = useState(false);
+
+  const handleAddToCart = async () => {
+    setIsAdding(true);
+    await addToCart(product.id);
+    setIsAdding(false);
+  };
+
   const vendorName = product.profiles
     ? `${product.profiles.first_name || ""} ${
         product.profiles.last_name || ""
@@ -43,8 +54,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         )}
       </CardContent>
       <CardFooter className="p-4 pt-0">
-        <Button className="w-full">
-          <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+        <Button
+          className="w-full"
+          onClick={handleAddToCart}
+          disabled={isAdding}
+        >
+          <ShoppingCart className="mr-2 h-4 w-4" />
+          {isAdding ? "Adding..." : "Add to Cart"}
         </Button>
       </CardFooter>
     </Card>

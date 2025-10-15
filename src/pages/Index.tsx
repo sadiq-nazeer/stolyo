@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 const Index = () => {
-  const { session, signOut, profile } = useAuth();
+  const { session, profile } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,19 +31,6 @@ const Index = () => {
           <Button asChild size="lg" className="w-64">
             <Link to="/marketplace">Browse Marketplace</Link>
           </Button>
-          <div className="flex space-x-4">
-            <Button asChild variant="secondary">
-              <Link to="/profile">My Profile</Link>
-            </Button>
-            {(profile.role === "vendor" || profile.role === "admin") && (
-              <Button asChild variant="secondary">
-                <Link to="/vendor/dashboard">Vendor Dashboard</Link>
-              </Button>
-            )}
-            <Button onClick={signOut} variant="destructive">
-              Logout
-            </Button>
-          </div>
         </div>
       </div>
       <div className="absolute bottom-0">

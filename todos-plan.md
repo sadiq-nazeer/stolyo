@@ -36,8 +36,8 @@ This document outlines the development plan for the platform. We will tackle fea
   - [ ] Implement a product detail page.
   - [ ] Add search and filtering capabilities.
 
-- [ ] **Shopping & Checkout**
-  - [ ] Implement a shopping cart.
+- [x] **Shopping & Checkout**
+  - [x] Implement a shopping cart.
   - [ ] Create a multi-step checkout process (Address, Payment, Confirmation).
   - [ ] Integrate a payment gateway.
 

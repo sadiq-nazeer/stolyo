@@ -29,3 +29,9 @@ export type VendorOrder = {
     price: number;
   }[];
 };
+
+export type CartItem = {
+  id: string;
+  quantity: number;
+  products: Product;
+};

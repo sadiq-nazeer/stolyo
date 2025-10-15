@@ -12,6 +12,8 @@ import ProductManagement from "./pages/ProductManagement";
 import OrderManagement from "./pages/OrderManagement";
 import Marketplace from "./pages/Marketplace";
 import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import MainLayout from "./components/MainLayout";
 
 const queryClient = new QueryClient();
 
@@ -19,21 +21,25 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/vendor/dashboard" element={<VendorDashboard />} />
-            <Route path="/vendor/products" element={<ProductManagement />} />
-            <Route path="/vendor/orders" element={<OrderManagement />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <CartProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route element={<MainLayout />}>
+                <Route path="/" element={<Index />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/vendor/dashboard" element={<VendorDashboard />} />
+                <Route path="/vendor/products" element={<ProductManagement />} />
+                <Route path="/vendor/orders" element={<OrderManagement />} />
+              </Route>
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </CartProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
