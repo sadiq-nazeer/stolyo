@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
-import { showError, showSuccess } from "@/utils/toast";
+import { showError } from "@/utils/toast";
 import { useState } from "react";
 import { Loader2, Lock } from "lucide-react";
 
@@ -20,10 +20,7 @@ const Checkout = () => {
   const { cartItems, cartTotal, itemCount } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
-  const [paymentStep, setPaymentStep] = useState<
-    "summary" | "processing" | "confirmed"
-  >("summary");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePlaceOrder = async () => {
     if (!user) {
@@ -31,27 +28,9 @@ const Checkout = () => {
       navigate("/login");
       return;
     }
-    setIsProcessingPayment(true);
-    setPaymentStep("processing");
+    setIsProcessing(true);
 
     try {
-      // Step 1: Invoke the edge function to create a payment intent
-      const { data: paymentData, error: paymentError } =
-        await supabase.functions.invoke("create-payment-intent", {
-          method: "POST",
-        });
-
-      if (paymentError) throw new Error(paymentError.message);
-
-      // In a real app, you'd use the client_secret with a library like Stripe.js
-      // to confirm the payment on the client side. We'll simulate it here.
-      console.log("Received client secret:", paymentData.client_secret);
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate payment processing
-
-      setPaymentStep("confirmed");
-      showSuccess("Payment successful!");
-
-      // Step 2: Create the order in the database
       const { data: orderId, error: orderError } = await supabase.rpc(
         "create_order_from_cart",
       );
@@ -61,13 +40,12 @@ const Checkout = () => {
       navigate(`/order-confirmation/${orderId}`);
     } catch (error: any) {
       showError(error.details || error.message || "Failed to place order.");
-      setPaymentStep("summary");
     } finally {
-      setIsProcessingPayment(false);
+      setIsProcessing(false);
     }
   };
 
-  if (itemCount === 0 && !isProcessingPayment) {
+  if (itemCount === 0 && !isProcessing) {
     return (
       <div className="container mx-auto py-10 text-center">
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
@@ -77,17 +55,6 @@ const Checkout = () => {
       </div>
     );
   }
-
-  const getButtonText = () => {
-    switch (paymentStep) {
-      case "processing":
-        return "Processing Payment...";
-      case "confirmed":
-        return "Finalizing Order...";
-      default:
-        return "Place Order";
-    }
-  };
 
   return (
     <div className="container mx-auto py-10 max-w-4xl">
@@ -120,7 +87,7 @@ const Checkout = () => {
           <CardHeader>
             <CardTitle>Confirm Purchase</CardTitle>
             <CardDescription>
-              Please review your order before payment.
+              Please review your order before placing it.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -143,15 +110,15 @@ const Checkout = () => {
               className="w-full"
               size="lg"
               onClick={handlePlaceOrder}
-              disabled={isProcessingPayment}
+              disabled={isProcessing}
             >
-              {isProcessingPayment && (
+              {isProcessing && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
-              {getButtonText()}
+              {isProcessing ? "Placing Order..." : "Place Order"}
             </Button>
             <p className="text-xs text-muted-foreground flex items-center justify-center">
-              <Lock className="mr-1 h-3 w-3" /> Secure SSL Encrypted Payment
+              <Lock className="mr-1 h-3 w-3" /> Your order is secure
             </p>
           </CardFooter>
         </Card>
