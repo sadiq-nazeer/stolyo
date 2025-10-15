@@ -10,6 +10,7 @@ import Profile from "./pages/Profile";
 import VendorDashboard from "./pages/VendorDashboard";
 import ProductManagement from "./pages/ProductManagement";
 import OrderManagement from "./pages/OrderManagement";
+import Marketplace from "./pages/Marketplace";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/vendor/dashboard" element={<VendorDashboard />} />
             <Route path="/vendor/products" element={<ProductManagement />} />
             <Route path="/vendor/orders" element={<OrderManagement />} />

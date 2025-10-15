@@ -22,22 +22,28 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">
-          Welcome, {session.user.email}
+          Welcome, {profile.first_name || session.user.email}
         </h1>
-        <p className="text-xl text-gray-600 mb-2">
-          You are now logged in.
+        <p className="text-lg text-gray-500 mb-8">
+          Your role is: <span className="font-semibold">{profile.role}</span>
         </p>
-        <p className="text-lg text-gray-500 mb-8">Your role is: <span className="font-semibold">{profile.role}</span></p>
-        <div className="space-x-4">
-          <Button asChild>
-            <Link to="/profile">Go to Profile</Link>
+        <div className="space-y-4 flex flex-col items-center">
+          <Button asChild size="lg" className="w-64">
+            <Link to="/marketplace">Browse Marketplace</Link>
           </Button>
-          {(profile.role === 'vendor' || profile.role === 'admin') && (
-            <Button asChild variant="outline">
-              <Link to="/vendor/dashboard">Vendor Dashboard</Link>
+          <div className="flex space-x-4">
+            <Button asChild variant="secondary">
+              <Link to="/profile">My Profile</Link>
             </Button>
-          )}
-          <Button onClick={signOut}>Logout</Button>
+            {(profile.role === "vendor" || profile.role === "admin") && (
+              <Button asChild variant="secondary">
+                <Link to="/vendor/dashboard">Vendor Dashboard</Link>
+              </Button>
+            )}
+            <Button onClick={signOut} variant="destructive">
+              Logout
+            </Button>
+          </div>
         </div>
       </div>
       <div className="absolute bottom-0">

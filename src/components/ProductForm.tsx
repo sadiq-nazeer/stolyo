@@ -15,13 +15,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { showSuccess, showError } from "@/utils/toast";
-import { Product } from "@/types";
+import { Category, Product } from "@/types";
+import { useEffect, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
   description: z.string().optional(),
   price: z.coerce.number().positive("Price must be a positive number."),
   stock_quantity: z.coerce.number().int().min(0, "Stock can't be negative."),
+  category_id: z.string().nullable().optional(),
 });
 
 interface ProductFormProps {
@@ -31,6 +40,22 @@ interface ProductFormProps {
 
 export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
   const { user } = useAuth();
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id, name");
+      if (error) {
+        showError("Could not fetch categories.");
+      } else if (data) {
+        setCategories(data);
+      }
+    };
+    fetchCategories();
+  }, []);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,6 +63,7 @@ export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
       description: product?.description || "",
       price: product?.price || 0,
       stock_quantity: product?.stock_quantity || 0,
+      category_id: product?.category_id || null,
     },
   });
 
@@ -111,6 +137,33 @@ export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
             </FormItem>
           )}
         />
+        <FormField
+          control={form.control}
+          name="category_id"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Category</FormLabel>
+              <Select
+                onValueChange={field.onChange}
+                defaultValue={field.value || ""}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -119,7 +172,12 @@ export const ProductForm = ({ product, onSuccess }: ProductFormProps) => {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <Input type="number" step="0.01" placeholder="0.00" {...field} />
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="0.00"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

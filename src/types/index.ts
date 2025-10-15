@@ -1,3 +1,8 @@
+export type Category = {
+  id: string;
+  name: string;
+};
+
 export type Product = {
   id: string;
   vendor_id: string;
@@ -7,6 +12,9 @@ export type Product = {
   stock_quantity: number;
   image_url: string | null;
   created_at: string;
+  category_id: string | null;
+  categories?: { name: string } | null;
+  profiles?: { first_name: string | null; last_name: string | null } | null;
 };
 
 export type VendorOrder = {

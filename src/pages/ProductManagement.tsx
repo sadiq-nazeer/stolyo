@@ -11,7 +11,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableCaption,
 } from "@/components/ui/table";
 import {
   Dialog,
@@ -66,7 +65,7 @@ const ProductManagement = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from("products")
-        .select("*")
+        .select("*, categories(name)")
         .eq("vendor_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -137,6 +136,7 @@ const ProductManagement = () => {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
+              <TableHead>Category</TableHead>
               <TableHead>Price</TableHead>
               <TableHead>Stock</TableHead>
               <TableHead>Created At</TableHead>
@@ -147,20 +147,38 @@ const ProductManagement = () => {
             {loading ? (
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-12" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-32" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-12" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-24" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="h-8 w-8 ml-auto" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : products.length > 0 ? (
               products.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell>
+                    {product.categories?.name || "Uncategorized"}
+                  </TableCell>
                   <TableCell>${product.price.toFixed(2)}</TableCell>
                   <TableCell>{product.stock_quantity}</TableCell>
-                  <TableCell>{new Date(product.created_at).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    {new Date(product.created_at).toLocaleDateString()}
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -173,7 +191,10 @@ const ProductManagement = () => {
                         <DropdownMenuItem onClick={() => openDialog(product)}>
                           <Edit className="mr-2 h-4 w-4" /> Edit
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => openDeleteAlert(product)} className="text-red-600">
+                        <DropdownMenuItem
+                          onClick={() => openDeleteAlert(product)}
+                          className="text-red-600"
+                        >
                           <Trash2 className="mr-2 h-4 w-4" /> Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -183,7 +204,7 @@ const ProductManagement = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="h-24 text-center">
+                <TableCell colSpan={6} className="h-24 text-center">
                   No products found. Get started by adding a new product.
                 </TableCell>
               </TableRow>
@@ -195,23 +216,35 @@ const ProductManagement = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{selectedProduct ? "Edit Product" : "Add New Product"}</DialogTitle>
+            <DialogTitle>
+              {selectedProduct ? "Edit Product" : "Add New Product"}
+            </DialogTitle>
           </DialogHeader>
-          <ProductForm product={selectedProduct} onSuccess={handleFormSuccess} />
+          <ProductForm
+            product={selectedProduct}
+            onSuccess={handleFormSuccess}
+          />
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteAlertOpen} onOpenChange={setIsDeleteAlertOpen}>
+      <AlertDialog
+        open={isDeleteAlertOpen}
+        onOpenChange={setIsDeleteAlertOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the product "{selectedProduct?.name}".
+              This action cannot be undone. This will permanently delete the
+              product "{selectedProduct?.name}".
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
