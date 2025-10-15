@@ -14,8 +14,8 @@ const VendorDashboard = () => {
           <Button asChild size="lg" className="w-full">
             <Link to="/vendor/products">Manage Products</Link>
           </Button>
-          <Button asChild size="lg" className="w-full" variant="outline" disabled>
-            <Link to="/vendor/orders">View Orders (Coming Soon)</Link>
+          <Button asChild size="lg" className="w-full" variant="outline">
+            <Link to="/vendor/orders">View Orders</Link>
           </Button>
         </div>
       </div>

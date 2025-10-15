@@ -17,12 +17,12 @@ This document outlines the development plan for the platform. We will tackle fea
 
 - [ ] **Inventory Management System**
   - [x] Create UI to add, view, edit, and delete products.
-  - [ ] Implement logic for tracking stock levels.
+  - [x] Implement logic for tracking stock levels.
   - [ ] Add support for product categories and variants.
 
 - [ ] **Order & Sales Management**
-  - [ ] Display a list of incoming orders.
-  - [ ] Allow vendors to view order details.
+  - [x] Display a list of incoming orders.
+  - [x] Allow vendors to view order details.
   - [ ] Implement functionality to update order status (e.g., "Processing," "Shipped").
 
 - [ ] **Invoicing & Billing**
