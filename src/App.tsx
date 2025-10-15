@@ -16,6 +16,7 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
 import ProductDetail from "./pages/ProductDetail";
 import VendorAnalytics from "./pages/VendorAnalytics";
+import Invoice from "./pages/Invoice";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
 import { NotificationProvider } from "./contexts/NotificationContext";
@@ -61,6 +62,7 @@ const App = () => (
                     path="/vendor/analytics"
                     element={<VendorAnalytics />}
                   />
+                  <Route path="/vendor/invoice/:orderId" element={<Invoice />} />
                 </Route>
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />

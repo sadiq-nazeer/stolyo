@@ -25,9 +25,9 @@ This document outlines the development plan for the platform. We will tackle fea
   - [x] Allow vendors to view order details.
   - [x] Implement functionality to update order status (e.g., "Processing," "Shipped").
 
-- [ ] **Invoicing & Billing**
-  - [ ] Automatically generate invoices from completed orders.
-  - [ ] Allow vendors to view and download invoices.
+- [x] **Invoicing & Billing**
+  - [x] Automatically generate invoices from completed orders.
+  - [x] Allow vendors to view and download invoices.
 
 ## Phase 3: Integrated Marketplace (Customer Facing)
 
@@ -43,12 +43,12 @@ This document outlines the development plan for the platform. We will tackle fea
 
 ## Phase 4: Advanced Features
 
-- [ ] **Analytics & Reporting**
-  - [ ] Develop a dashboard to show key metrics (sales, revenue, top products).
-  - [ ] Add charting and data visualization.
+- [x] **Analytics & Reporting**
+  - [x] Develop a dashboard to show key metrics (sales, revenue, top products).
+  - [x] Add charting and data visualization.
 
-- [ ] **Real-time Features**
-  - [ ] Implement real-time notifications for new orders.
+- [x] **Real-time Features**
+  - [x] Implement real-time notifications for new orders.
   - [ ] Show live inventory updates.
 
 ## Phase 5: Polish & Deployment

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { VendorOrder } from "@/types";
@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 import { showError, showSuccess } from "@/utils/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { FileText } from "lucide-react";
 
 const OrderManagement = () => {
   const { profile, loading: authLoading } = useAuth();
@@ -195,9 +196,20 @@ const OrderManagement = () => {
           {selectedOrder && (
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
-                <p><strong>Customer:</strong></p><p>{selectedOrder.customer_email}</p>
-                <p><strong>Date:</strong></p><p>{new Date(selectedOrder.order_created_at).toLocaleString()}</p>
-                <p><strong>Order Total:</strong></p><p>${selectedOrder.total_amount.toFixed(2)}</p>
+                <p>
+                  <strong>Customer:</strong>
+                </p>
+                <p>{selectedOrder.customer_email}</p>
+                <p>
+                  <strong>Date:</strong>
+                </p>
+                <p>
+                  {new Date(selectedOrder.order_created_at).toLocaleString()}
+                </p>
+                <p>
+                  <strong>Order Total:</strong>
+                </p>
+                <p>${selectedOrder.total_amount.toFixed(2)}</p>
               </div>
 
               <div className="flex items-center gap-4 pt-2">
@@ -243,10 +255,23 @@ const OrderManagement = () => {
             </div>
           )}
           <DialogFooter>
+            {selectedOrder && (
+              <Button asChild variant="outline" className="mr-auto">
+                <Link to={`/vendor/invoice/${selectedOrder.order_id}`}>
+                  <FileText className="mr-2 h-4 w-4" />
+                  View Invoice
+                </Link>
+              </Button>
+            )}
             <Button variant="secondary" onClick={() => setSelectedOrder(null)}>
               Close
             </Button>
-            <Button onClick={handleUpdateStatus} disabled={isUpdating || newStatus === selectedOrder?.order_status}>
+            <Button
+              onClick={handleUpdateStatus}
+              disabled={
+                isUpdating || newStatus === selectedOrder?.order_status
+              }
+            >
               {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
