@@ -23,7 +23,7 @@ This document outlines the development plan for the platform. We will tackle fea
 - [ ] **Order & Sales Management**
   - [x] Display a list of incoming orders.
   - [x] Allow vendors to view order details.
-  - [ ] Implement functionality to update order status (e.g., "Processing," "Shipped").
+  - [x] Implement functionality to update order status (e.g., "Processing," "Shipped").
 
 - [ ] **Invoicing & Billing**
   - [ ] Automatically generate invoices from completed orders.

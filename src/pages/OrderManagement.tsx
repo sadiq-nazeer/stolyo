@@ -20,7 +20,15 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { showError } from "@/utils/toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { showError, showSuccess } from "@/utils/toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,6 +38,24 @@ const OrderManagement = () => {
   const [orders, setOrders] = useState<VendorOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<VendorOrder | null>(null);
+  const [newStatus, setNewStatus] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const fetchOrders = async () => {
+    if (!profile || (profile.role !== "vendor" && profile.role !== "admin"))
+      return;
+    try {
+      setLoading(true);
+      const { data, error } = await supabase.rpc("get_vendor_orders");
+
+      if (error) throw error;
+      setOrders(data || []);
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading) {
@@ -38,31 +64,38 @@ const OrderManagement = () => {
       } else if (profile.role !== "vendor" && profile.role !== "admin") {
         showError("You don't have permission to access this page.");
         navigate("/");
+      } else {
+        fetchOrders();
       }
     }
   }, [profile, authLoading, navigate]);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!profile || (profile.role !== "vendor" && profile.role !== "admin"))
-        return;
-      try {
-        setLoading(true);
-        const { data, error } = await supabase.rpc("get_vendor_orders");
+  const handleOpenDialog = (order: VendorOrder) => {
+    setSelectedOrder(order);
+    setNewStatus(order.order_status);
+  };
 
-        if (error) throw error;
-        setOrders(data || []);
-      } catch (error: any) {
-        showError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleUpdateStatus = async () => {
+    if (!selectedOrder || !newStatus) return;
 
-    if (!authLoading) {
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: newStatus })
+        .eq("id", selectedOrder.order_id);
+
+      if (error) throw error;
+
+      showSuccess("Order status updated successfully!");
+      setSelectedOrder(null);
       fetchOrders();
+    } catch (error: any) {
+      showError(error.message);
+    } finally {
+      setIsUpdating(false);
     }
-  }, [profile, authLoading]);
+  };
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status.toLowerCase()) {
@@ -130,7 +163,7 @@ const OrderManagement = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => setSelectedOrder(order)}
+                      onClick={() => handleOpenDialog(order)}
                     >
                       View Details
                     </Button>
@@ -161,20 +194,28 @@ const OrderManagement = () => {
           </DialogHeader>
           {selectedOrder && (
             <div className="space-y-4 py-4">
-              <p>
-                <strong>Customer:</strong> {selectedOrder.customer_email}
-              </p>
-              <p>
-                <strong>Date:</strong>{" "}
-                {new Date(selectedOrder.order_created_at).toLocaleString()}
-              </p>
-              <p>
-                <strong>Status:</strong> {selectedOrder.order_status}
-              </p>
-              <p>
-                <strong>Order Total:</strong> $
-                {selectedOrder.total_amount.toFixed(2)}
-              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <p><strong>Customer:</strong></p><p>{selectedOrder.customer_email}</p>
+                <p><strong>Date:</strong></p><p>{new Date(selectedOrder.order_created_at).toLocaleString()}</p>
+                <p><strong>Order Total:</strong></p><p>${selectedOrder.total_amount.toFixed(2)}</p>
+              </div>
+
+              <div className="flex items-center gap-4 pt-2">
+                <Label htmlFor="status" className="font-bold">
+                  Order Status:
+                </Label>
+                <Select value={newStatus} onValueChange={setNewStatus}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Update status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="shipped">Shipped</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <h4 className="font-semibold mt-4">Items in this order:</h4>
               <div className="rounded-md border">
@@ -204,6 +245,9 @@ const OrderManagement = () => {
           <DialogFooter>
             <Button variant="secondary" onClick={() => setSelectedOrder(null)}>
               Close
+            </Button>
+            <Button onClick={handleUpdateStatus} disabled={isUpdating || newStatus === selectedOrder?.order_status}>
+              {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
