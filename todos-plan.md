@@ -5,7 +5,7 @@ This document outlines the development plan for the platform. We will tackle fea
 ## Phase 1: Core Foundation
 
 - [ ] **User Management & Authentication**
-  - [ ] Setup authentication (Login, Register, Logout)
+  - [x] Setup authentication (Login, Register, Logout)
   - [ ] Implement role-based access control (RBAC) for vendors and admins.
   - [ ] Create user profile page.
 
