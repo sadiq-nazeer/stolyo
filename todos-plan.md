@@ -29,17 +29,16 @@ This document outlines the development plan for the platform. We will tackle fea
   - [x] Automatically generate invoices from completed orders.
   - [x] Allow vendors to view and download invoices.
 
-## Phase 3: Integrated Marketplace (Customer Facing)
+## Phase 3: Vendor Storefronts (Shopify-like)
 
-- [x] **Product Discovery**
-  - [x] Create a main marketplace page to display all products.
-  - [x] Implement a product detail page.
-  - [x] Add search and filtering capabilities.
+- [x] **Individual Vendor Stores**
+  - [x] Create dynamic store pages for each vendor (e.g., `/store/:vendorId`).
+  - [x] Display vendor-specific products.
+  - [x] Add search and filtering capabilities within each store.
 
 - [x] **Shopping & Checkout**
   - [x] Implement a shopping cart.
   - [x] Create a multi-step checkout process (Address, Payment, Confirmation).
-  - [ ] Integrate a payment gateway.
 
 ## Phase 4: Advanced Features
 
@@ -49,7 +48,7 @@ This document outlines the development plan for the platform. We will tackle fea
 
 - [x] **Real-time Features**
   - [x] Implement real-time notifications for new orders.
-  - [ ] Show live inventory updates.
+  - [x] Show live inventory updates on store and product pages.
 
 ## Phase 5: Polish & Deployment
 

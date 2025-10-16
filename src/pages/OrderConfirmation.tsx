@@ -27,7 +27,7 @@ const OrderConfirmation = () => {
           </p>
           <div className="flex gap-4 justify-center pt-4">
             <Button asChild>
-              <Link to="/marketplace">Continue Shopping</Link>
+              <Link to="/">Continue Shopping</Link>
             </Button>
             <Button asChild variant="outline">
               <Link to="/my-orders">View My Orders</Link>

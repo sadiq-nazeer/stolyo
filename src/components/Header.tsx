@@ -10,7 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { LayoutGrid, LogOut, User as UserIcon, Package } from "lucide-react";
+import {
+  LayoutGrid,
+  LogOut,
+  User as UserIcon,
+  Package,
+  Store,
+} from "lucide-react";
 import { CartSheet } from "./CartSheet";
 import { NotificationBell } from "./NotificationBell";
 
@@ -30,12 +36,14 @@ const Header = () => {
           <span className="font-bold">E-Commerce</span>
         </Link>
         <nav className="flex items-center space-x-6 text-sm font-medium">
-          <Link
-            to="/marketplace"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
-          >
-            Marketplace
-          </Link>
+          {profile?.role === "vendor" && user && (
+            <Link
+              to={`/store/${user.id}`}
+              className="transition-colors hover:text-foreground/80 text-foreground/60"
+            >
+              My Store
+            </Link>
+          )}
         </nav>
         <div className="flex flex-1 items-center justify-end space-x-4">
           <CartSheet />
@@ -78,6 +86,12 @@ const Header = () => {
                   <Package className="mr-2 h-4 w-4" />
                   <span>My Orders</span>
                 </DropdownMenuItem>
+                {profile.role === "vendor" && (
+                  <DropdownMenuItem onClick={() => navigate(`/store/${user.id}`)}>
+                    <Store className="mr-2 h-4 w-4" />
+                    <span>My Store</span>
+                  </DropdownMenuItem>
+                )}
                 {(profile.role === "vendor" || profile.role === "admin") && (
                   <DropdownMenuItem
                     onClick={() => navigate("/vendor/dashboard")}

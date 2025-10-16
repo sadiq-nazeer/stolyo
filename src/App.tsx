@@ -10,7 +10,7 @@ import Profile from "./pages/Profile";
 import VendorDashboard from "./pages/VendorDashboard";
 import ProductManagement from "./pages/ProductManagement";
 import OrderManagement from "./pages/OrderManagement";
-import Marketplace from "./pages/Marketplace";
+import Store from "./pages/Store";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import MyOrders from "./pages/MyOrders";
@@ -38,7 +38,7 @@ const App = () => (
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<Index />} />
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/store/:vendorId" element={<Store />} />
                   <Route
                     path="/product/:productId"
                     element={<ProductDetail />}

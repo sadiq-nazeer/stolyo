@@ -49,8 +49,8 @@ const Checkout = () => {
     return (
       <div className="container mx-auto py-10 text-center">
         <h1 className="text-2xl font-bold">Your cart is empty</h1>
-        <Button onClick={() => navigate("/marketplace")} className="mt-4">
-          Go to Marketplace
+        <Button onClick={() => navigate("/")} className="mt-4">
+          Continue Shopping
         </Button>
       </div>
     );

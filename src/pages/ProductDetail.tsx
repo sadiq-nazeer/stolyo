@@ -103,7 +103,7 @@ const ProductDetail = () => {
           The product you're looking for doesn't exist.
         </p>
         <Button asChild className="mt-4">
-          <Link to="/marketplace">Back to Marketplace</Link>
+          <Link to="/">Back to Home</Link>
         </Button>
       </div>
     );
@@ -124,7 +124,15 @@ const ProductDetail = () => {
             <Badge variant="secondary">{product.categories.name}</Badge>
           )}
           <h1 className="text-3xl lg:text-4xl font-bold">{product.name}</h1>
-          <p className="text-sm text-muted-foreground">Sold by {vendorName}</p>
+          <p className="text-sm text-muted-foreground">
+            Sold by{" "}
+            <Link
+              to={`/store/${product.vendor_id}`}
+              className="hover:underline text-primary"
+            >
+              {vendorName}
+            </Link>
+          </p>
           <p className="text-3xl font-bold">${product.price.toFixed(2)}</p>
           <p className="text-muted-foreground">{product.description}</p>
           <p

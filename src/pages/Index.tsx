@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useEffect } from "react";
 
 const Index = () => {
-  const { session, profile } = useAuth();
+  const { session, profile, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,9 +28,17 @@ const Index = () => {
           Your role is: <span className="font-semibold">{profile.role}</span>
         </p>
         <div className="space-y-4 flex flex-col items-center">
-          <Button asChild size="lg" className="w-64">
-            <Link to="/marketplace">Browse Marketplace</Link>
-          </Button>
+          {profile.role === "vendor" && user && (
+            <Button asChild size="lg" className="w-64">
+              <Link to={`/store/${user.id}`}>View My Store</Link>
+            </Button>
+          )}
+          {profile.role === "user" && (
+            <p className="text-muted-foreground">
+              This is the main landing page. In the future, we can add a
+              directory of stores here!
+            </p>
+          )}
         </div>
       </div>
       <div className="absolute bottom-0">
