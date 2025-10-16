@@ -69,7 +69,7 @@ const Store = () => {
         // Fetch products
         let query = supabase
           .from("products")
-          .select("*, categories(name), profiles(first_name, last_name)")
+          .select("*, categories(name)")
           .eq("vendor_id", vendorId);
 
         if (debouncedSearchTerm) {
@@ -181,7 +181,11 @@ const Store = () => {
       ) : products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              vendorName={vendorName}
+            />
           ))}
         </div>
       ) : (

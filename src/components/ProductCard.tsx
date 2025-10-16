@@ -15,9 +15,10 @@ import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   product: Product;
+  vendorName: string;
 }
 
-export const ProductCard = ({ product }: ProductCardProps) => {
+export const ProductCard = ({ product, vendorName }: ProductCardProps) => {
   const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
   const navigate = useNavigate();
@@ -28,12 +29,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     await addToCart(product.id);
     setIsAdding(false);
   };
-
-  const vendorName = product.profiles
-    ? `${product.profiles.first_name || ""} ${
-        product.profiles.last_name || ""
-      }`.trim()
-    : "Unknown Vendor";
 
   return (
     <Card

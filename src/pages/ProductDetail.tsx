@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Product } from "@/types";
+import { UserProfile } from "@/contexts/AuthContext";
 import { showError } from "@/utils/toast";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -13,6 +14,7 @@ const ProductDetail = () => {
   const { productId } = useParams<{ productId: string }>();
   const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
+  const [vendor, setVendor] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
@@ -22,14 +24,28 @@ const ProductDetail = () => {
       if (!productId) return;
       try {
         setLoading(true);
-        const { data, error } = await supabase
+        const { data: productData, error: productError } = await supabase
           .from("products")
-          .select("*, categories(name), profiles(first_name, last_name)")
+          .select("*, categories(name)")
           .eq("id", productId)
           .single();
 
-        if (error) throw error;
-        setProduct(data);
+        if (productError) throw productError;
+        setProduct(productData);
+
+        if (productData) {
+          const { data: vendorData, error: vendorError } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", productData.vendor_id)
+            .single();
+
+          if (vendorError) {
+            console.error("Could not fetch vendor for product", vendorError);
+          } else {
+            setVendor(vendorData);
+          }
+        }
       } catch (error: any) {
         showError("Failed to fetch product details.");
       } finally {
@@ -72,10 +88,8 @@ const ProductDetail = () => {
     setIsAdding(false);
   };
 
-  const vendorName = product?.profiles
-    ? `${product.profiles.first_name || ""} ${
-        product.profiles.last_name || ""
-      }`.trim()
+  const vendorName = vendor
+    ? `${vendor.first_name || ""} ${vendor.last_name || ""}`.trim()
     : "Unknown Vendor";
 
   if (loading) {
