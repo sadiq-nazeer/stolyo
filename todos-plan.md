@@ -56,5 +56,5 @@ This document outlines the development plan for the platform. We will tackle fea
   - [x] Add service workers for offline capabilities.
   - [x] Ensure the app is installable on mobile devices.
 
-- [ ] **Third-Party Integrations**
-  - [ ] Set up API for external services.
+- [x] **Third-Party Integrations**
+  - [x] Set up API for external services.
