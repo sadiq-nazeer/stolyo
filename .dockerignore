@@ -1,0 +1,14 @@
+.git
+node_modules
+.next
+legacy
+android
+ios
+pnpm-store
+npm-debug.log
+yarn-error.log
+dist
+tmp
+Dockerfile
+.github
+.vscode

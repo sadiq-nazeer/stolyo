@@ -10,6 +10,9 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+.next
+.pnpm-store
+.env
 *.local
 
 # Editor directories and files
