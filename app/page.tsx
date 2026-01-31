@@ -49,12 +49,18 @@ export default function LandingPage() {
             <li>4) Replace Supabase with Prisma + NextAuth.</li>
             <li>5) Add CI/CD and production hardening.</li>
           </ol>
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-wrap gap-3 pt-2">
             <Link
               href="/vendor/settings"
               className="rounded-full bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:opacity-90"
             >
               Go to vendor settings
+            </Link>
+            <Link
+              href="/login"
+              className="rounded-full border px-4 py-2 text-sm font-medium hover:bg-muted/70"
+            >
+              Sign in
             </Link>
             <Link
               href="/storefront/preview"

@@ -4,6 +4,8 @@ import {
 } from "@/components/storefront/storefront-view";
 import { defaultStoreConfig } from "@/lib/store/config";
 import { loadStoreConfig } from "@/lib/store/config-service";
+import { requireTenantAccess } from "@/lib/tenant/access";
+import { notFound, redirect } from "next/navigation";
 
 const sampleProducts: StorefrontProduct[] = [
   {
@@ -30,6 +32,14 @@ const sampleProducts: StorefrontProduct[] = [
 ];
 
 export default async function StorefrontPreviewPage() {
+  const access = await requireTenantAccess(["OWNER", "ADMIN", "MEMBER"]);
+  if (!access.ok) {
+    if (access.reason === "unauthorized") {
+      redirect("/login");
+    }
+    return notFound();
+  }
+
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
 
   return (

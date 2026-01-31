@@ -10,6 +10,7 @@ import { upsertStoreConfig } from "./actions";
 const formSchema = z.object({
   logoUrl: z.string().url().optional().or(z.literal("")),
   headerImageUrl: z.string().url().optional().or(z.literal("")),
+  published: z.boolean().default(false),
   primaryColor: z.string().optional(),
   accentColor: z.string().optional(),
   itemCardSize: z.enum(["small", "medium", "large"]),
@@ -45,9 +46,18 @@ type SettingsFormProps = {
   initialConfig: StoreConfig;
 };
 
+type UploadResponse = {
+  uploadUrl: string;
+  assetUrl: string;
+};
+
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+
 export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingHeader, setIsUploadingHeader] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormValues>({
@@ -55,6 +65,7 @@ export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
     defaultValues: {
       logoUrl: initialConfig.logoUrl ?? "",
       headerImageUrl: initialConfig.headerImageUrl ?? "",
+      published: initialConfig.published ?? false,
       primaryColor: initialConfig.primaryColor ?? "",
       accentColor: initialConfig.accentColor ?? "",
       itemCardSize: initialConfig.itemCardSize,
@@ -69,12 +80,84 @@ export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
     },
   });
 
+  const uploadAsset = async (
+    file: File,
+    assetType: "logo" | "header",
+  ): Promise<string> => {
+    if (file.size > MAX_UPLOAD_BYTES) {
+      throw new Error("File is too large (max 5MB)");
+    }
+
+    const response = await fetch("/api/uploads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,
+        contentType: file.type,
+        assetType,
+        size: file.size,
+      }),
+    });
+
+    const payload = (await response.json()) as
+      | UploadResponse
+      | { error?: string };
+    if (!response.ok) {
+      const errorMessage =
+        "error" in payload ? payload.error : undefined;
+      throw new Error(errorMessage ?? "Failed to start upload");
+    }
+
+    if (!("uploadUrl" in payload) || !("assetUrl" in payload)) {
+      throw new Error("Upload response was invalid");
+    }
+    const uploadResult = await fetch(payload.uploadUrl, {
+      method: "PUT",
+      headers: { "Content-Type": file.type },
+      body: file,
+    });
+
+    if (!uploadResult.ok) {
+      throw new Error("Upload failed");
+    }
+
+    return payload.assetUrl;
+  };
+
+  const handleUpload = async (
+    file: File | undefined,
+    assetType: "logo" | "header",
+  ) => {
+    if (!file) return;
+    setMessage(null);
+    setError(null);
+
+    const setUploading =
+      assetType === "logo" ? setIsUploadingLogo : setIsUploadingHeader;
+    const setFieldValue =
+      assetType === "logo"
+        ? (url: string) => form.setValue("logoUrl", url)
+        : (url: string) => form.setValue("headerImageUrl", url);
+
+    setUploading(true);
+    try {
+      const assetUrl = await uploadAsset(file, assetType);
+      setFieldValue(assetUrl);
+      setMessage("Upload completed");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const onSubmit = (values: FormValues) => {
     setMessage(null);
     setError(null);
     const config: StoreConfig = {
       logoUrl: values.logoUrl || undefined,
       headerImageUrl: values.headerImageUrl || undefined,
+      published: values.published,
       primaryColor: values.primaryColor || undefined,
       accentColor: values.accentColor || undefined,
       itemCardSize: values.itemCardSize,
@@ -114,6 +197,14 @@ export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
+        <Field label="Published" description="Visible to the public.">
+          <Toggle
+            label="Storefront live"
+            checked={form.watch("published")}
+            onChange={(value) => form.setValue("published", value)}
+          />
+        </Field>
+
         <Field
           label="Logo URL"
           description="Displayed in navigation."
@@ -125,6 +216,19 @@ export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
             className="w-full rounded-md border px-3 py-2"
             {...form.register("logoUrl")}
           />
+          <input
+            type="file"
+            accept="image/*"
+            className="mt-2 w-full text-sm"
+            onChange={(event) =>
+              void handleUpload(event.target.files?.[0], "logo")
+            }
+          />
+          {isUploadingLogo && (
+            <span className="text-xs text-muted-foreground">
+              Uploading logo...
+            </span>
+          )}
         </Field>
 
         <Field
@@ -138,6 +242,19 @@ export const SettingsForm = ({ initialConfig }: SettingsFormProps) => {
             className="w-full rounded-md border px-3 py-2"
             {...form.register("headerImageUrl")}
           />
+          <input
+            type="file"
+            accept="image/*"
+            className="mt-2 w-full text-sm"
+            onChange={(event) =>
+              void handleUpload(event.target.files?.[0], "header")
+            }
+          />
+          {isUploadingHeader && (
+            <span className="text-xs text-muted-foreground">
+              Uploading header image...
+            </span>
+          )}
         </Field>
 
         <Field label="Primary color" description="CSS color or hex code.">

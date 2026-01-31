@@ -6,6 +6,7 @@ export type LinkConfig = {
 export type StoreConfig = {
   logoUrl?: string;
   headerImageUrl?: string;
+  published?: boolean;
   primaryColor?: string;
   accentColor?: string;
   itemCardSize: "small" | "medium" | "large";
@@ -22,6 +23,7 @@ export type StoreConfig = {
 };
 
 export const defaultStoreConfig: StoreConfig = {
+  published: false,
   itemCardSize: "medium",
   buttonSize: "md",
   borderRadius: "md",

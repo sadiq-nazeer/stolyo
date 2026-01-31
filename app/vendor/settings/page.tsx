@@ -1,8 +1,18 @@
 import { SettingsForm } from "@/app/vendor/settings/settings-form";
 import { defaultStoreConfig } from "@/lib/store/config";
 import { loadStoreConfig } from "@/lib/store/config-service";
+import { requireTenantAccess } from "@/lib/tenant/access";
+import { notFound, redirect } from "next/navigation";
 
 export default async function VendorSettingsPage() {
+  const access = await requireTenantAccess(["OWNER", "ADMIN"]);
+  if (!access.ok) {
+    if (access.reason === "unauthorized") {
+      redirect("/login");
+    }
+    return notFound();
+  }
+
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
 
   return (

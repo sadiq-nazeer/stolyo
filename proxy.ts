@@ -14,14 +14,17 @@ const extractSubdomain = (host: string) => {
   return parts[0];
 };
 
-export function proxy(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   const host = req.headers.get("host") ?? "";
   const subdomain = extractSubdomain(host);
+  const hostname = stripPort(host);
 
   const response = NextResponse.next();
+  if (hostname) {
+    response.headers.set("x-tenant-hostname", hostname);
+  }
   if (subdomain) {
     response.headers.set("x-tenant-subdomain", subdomain);
-    response.headers.set("x-tenant-hostname", stripPort(host));
   }
 
   return response;

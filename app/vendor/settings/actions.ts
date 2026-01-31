@@ -1,19 +1,17 @@
 'use server';
 
-import { auth } from "@/auth";
 import type { StoreConfig } from "@/lib/store/config";
+import { requireTenantAccess } from "@/lib/tenant/access";
 import { getTenantContext } from "@/lib/tenant/request-context";
 
 export const upsertStoreConfig = async (config: StoreConfig) => {
-  const session = await auth();
-  if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+  const access = await requireTenantAccess(["OWNER", "ADMIN"]);
+  if (!access.ok) {
+    throw new Error(access.reason === "unauthorized" ? "Unauthorized" : "Forbidden");
   }
 
   const context = await getTenantContext();
-  if (!context) {
-    throw new Error("Tenant not resolved");
-  }
+  if (!context) throw new Error("Tenant not resolved");
 
   const configJson = JSON.stringify(config);
   await context.client.$transaction([

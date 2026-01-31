@@ -4,6 +4,7 @@ import {
 } from "@/components/storefront/storefront-view";
 import { defaultStoreConfig } from "@/lib/store/config";
 import { loadStoreConfig } from "@/lib/store/config-service";
+import { notFound } from "next/navigation";
 
 const fallbackProducts: StorefrontProduct[] = [
   {
@@ -35,7 +36,11 @@ type StorefrontPageProps = {
 
 export default async function StorefrontPage({ params }: StorefrontPageProps) {
   const { slug } = await params;
+  void slug;
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
+  if (!config.published) {
+    notFound();
+  }
 
   return <StorefrontView config={config} products={fallbackProducts} />;
 }

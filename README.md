@@ -92,6 +92,26 @@ pnpm dev
 
 The application will be available at `http://localhost:3000`
 
+### Step 6: Seed and sign in (local development)
+
+To use the vendor dashboard and save store settings, you need a user and a tenant. Run the seed script:
+
+```powershell
+pnpm seed
+```
+
+This creates:
+
+- A **demo tenant** ("Demo Store") and a **localhost** domain so `http://localhost:3000` resolves to that tenant.
+- A **demo user** you can sign in with.
+
+**Demo login (printed by the seed):**
+
+- **Email:** `demo@stolyo.local`
+- **Password:** `demo1234`
+
+Then open [http://localhost:3000/login](http://localhost:3000/login), sign in, and go to **Vendor settings** to change store theme and options. Saving settings requires being signed in and visiting on a host that resolves to a tenant (localhost works after seeding).
+
 ## 📋 Available Scripts
 
 - `pnpm dev` - Start Next.js development server
@@ -101,6 +121,7 @@ The application will be available at `http://localhost:3000`
 - `pnpm prisma generate` - Generate Prisma Client
 - `pnpm prisma migrate dev` - Run database migrations
 - `pnpm prisma studio` - Open Prisma Studio (database GUI)
+- `pnpm seed` - Seed demo tenant and user (see Step 6)
 
 ## 🏗️ Project Structure
 

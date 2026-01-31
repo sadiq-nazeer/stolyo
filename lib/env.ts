@@ -9,6 +9,12 @@ const envSchema = z.object({
   EMAIL_SERVER_PASSWORD: z.string().optional(),
   EMAIL_FROM: z.string().email("EMAIL_FROM must be an email address").optional(),
   DASHBOARD_HOST: z.string().default("stolyo.com"),
+  ADMIN_API_KEY: z.string().optional(),
+  R2_ENDPOINT: z.string().optional(),
+  R2_BUCKET: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_PUBLIC_BASE_URL: z.string().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
