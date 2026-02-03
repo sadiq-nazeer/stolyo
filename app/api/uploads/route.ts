@@ -14,7 +14,7 @@ const ALLOWED_IMAGE_TYPES = new Set([
 type UploadRequest = {
   filename?: string;
   contentType?: string;
-  assetType?: "logo" | "header";
+  assetType?: "logo" | "header" | "product";
   size?: number;
 };
 

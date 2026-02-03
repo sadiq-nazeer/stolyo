@@ -8,7 +8,9 @@ export type StorefrontProduct = {
   id: string;
   name: string;
   price: number;
+  currency: string;
   image: string;
+  slug: string;
 };
 
 type StorefrontViewProps = {
@@ -125,7 +127,7 @@ export const StorefrontView = ({ config, products }: StorefrontViewProps) => {
                   <div className="space-y-2 p-3">
                     <div className="text-sm font-semibold">{product.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      ${product.price.toFixed(2)}
+                      {product.currency} {product.price.toFixed(2)}
                     </div>
                     <button
                       className={`${radiusClass} w-full bg-[var(--store-primary)] px-3 text-sm font-medium text-primary-foreground`}
@@ -133,6 +135,13 @@ export const StorefrontView = ({ config, products }: StorefrontViewProps) => {
                     >
                       Add to cart
                     </button>
+                    <Link
+                      href={`/p/${product.slug}`}
+                      className={`${radiusClass} block w-full border px-3 py-2 text-center text-sm font-medium`}
+                      style={{ height: "var(--store-button-height)" }}
+                    >
+                      Details
+                    </Link>
                   </div>
                 </article>
               ))}
@@ -166,7 +175,7 @@ export const StorefrontView = ({ config, products }: StorefrontViewProps) => {
                   <div className="space-y-2 p-3">
                     <div className="text-sm font-semibold">{product.name}</div>
                     <div className="text-sm text-muted-foreground">
-                      ${product.price.toFixed(2)}
+                      {product.currency} {product.price.toFixed(2)}
                     </div>
                     <div className="flex gap-2">
                       <button
@@ -175,12 +184,13 @@ export const StorefrontView = ({ config, products }: StorefrontViewProps) => {
                       >
                         Add
                       </button>
-                      <button
-                        className={`${radiusClass} flex-1 border px-3 text-sm font-medium`}
+                      <Link
+                        href={`/p/${product.slug}`}
+                        className={`${radiusClass} flex-1 border px-3 text-center text-sm font-medium`}
                         style={{ height: "var(--store-button-height)" }}
                       >
                         Details
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </article>

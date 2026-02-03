@@ -13,13 +13,29 @@ CREATE TABLE IF NOT EXISTS "{{schema}}"."products" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL,
   description TEXT,
+  slug TEXT,
+  status TEXT NOT NULL DEFAULT 'draft',
   price NUMERIC(12,2) NOT NULL DEFAULT 0,
+  compare_at_price NUMERIC(12,2),
+  sku TEXT,
+  currency TEXT NOT NULL DEFAULT 'USD',
   stock_quantity INTEGER NOT NULL DEFAULT 0,
   category_id UUID REFERENCES "{{schema}}"."categories"(id) ON DELETE SET NULL,
   image_url TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Migrations for existing tenants (idempotent).
+ALTER TABLE "{{schema}}"."products" ADD COLUMN IF NOT EXISTS slug TEXT;
+ALTER TABLE "{{schema}}"."products" ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'draft';
+ALTER TABLE "{{schema}}"."products" ADD COLUMN IF NOT EXISTS compare_at_price NUMERIC(12,2);
+ALTER TABLE "{{schema}}"."products" ADD COLUMN IF NOT EXISTS sku TEXT;
+ALTER TABLE "{{schema}}"."products" ADD COLUMN IF NOT EXISTS currency TEXT NOT NULL DEFAULT 'USD';
+
+CREATE UNIQUE INDEX IF NOT EXISTS "products_slug_unique"
+  ON "{{schema}}"."products"(slug)
+  WHERE slug IS NOT NULL;
 
 CREATE TABLE IF NOT EXISTS "{{schema}}"."customers" (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -2,34 +2,12 @@ import {
     StorefrontView,
     type StorefrontProduct,
 } from "@/components/storefront/storefront-view";
+import { listProducts } from "@/lib/products/product-repo";
 import { defaultStoreConfig } from "@/lib/store/config";
 import { loadStoreConfig } from "@/lib/store/config-service";
 import { requireTenantAccess } from "@/lib/tenant/access";
+import { getTenantDbContext } from "@/lib/tenant/tenant-db-context";
 import { notFound, redirect } from "next/navigation";
-
-const sampleProducts: StorefrontProduct[] = [
-  {
-    id: "p1",
-    name: "Canvas Tote",
-    price: 38,
-    image:
-      "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "p2",
-    name: "Modern Lamp",
-    price: 72,
-    image:
-      "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=600&q=80",
-  },
-  {
-    id: "p3",
-    name: "Indoor Plant",
-    price: 24,
-    image:
-      "https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=600&q=80",
-  },
-];
 
 export default async function StorefrontPreviewPage() {
   const access = await requireTenantAccess(["OWNER", "ADMIN", "MEMBER"]);
@@ -42,7 +20,20 @@ export default async function StorefrontPreviewPage() {
 
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
 
+  const ctx = await getTenantDbContext();
+  if (!ctx) return notFound();
+
+  const rows = await listProducts(ctx.db);
+  const products: StorefrontProduct[] = rows.map((p) => ({
+    id: p.id,
+    name: p.name,
+    slug: p.slug ?? p.id,
+    price: Number(p.price),
+    currency: p.currency,
+    image: p.image_url ?? "/placeholder.svg",
+  }));
+
   return (
-    <StorefrontView config={config} products={sampleProducts} />
+    <StorefrontView config={config} products={products} />
   );
 }

@@ -1,15 +1,25 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";import { useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 
+type TenantLookupPayload =
+  | { ok: true; redirectUrl: string }
+  | { ok: false; error: "unauthorized" | "no_tenant" };
+
+const normalizeRedirectPath = (raw: string | null) => {
+  if (!raw) return "/store";
+  if (!raw.startsWith("/")) return "/store";
+  // Prevent open redirects; only allow store area paths to be supplied.
+  if (raw === "/store" || raw.startsWith("/store/")) return raw;
+  return "/store";
+};
+
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl =
-    searchParams.get("callbackUrl") ?? "/vendor/settings";
+  const callbackUrl = searchParams.get("callbackUrl");
+  const targetPath = normalizeRedirectPath(callbackUrl) || "/store";
   const error = searchParams.get("error");
 
   const [email, setEmail] = useState("");
@@ -29,14 +39,30 @@ function LoginForm() {
       const result = await signIn("credentials", {
         email: email.trim(),
         password,
-        callbackUrl,
+        callbackUrl: targetPath,
         redirect: false,
       });
       if (result?.error) {
         setFormError("Invalid email or password.");
         setIsPending(false);
-      } else if (result?.ok && result?.url) {
-        router.push(result.url);
+      } else if (result?.ok) {
+        const response = await fetch(
+          `/api/me/tenant?path=${encodeURIComponent(targetPath)}`,
+          { method: "GET" },
+        );
+        const payload = (await response.json()) as TenantLookupPayload;
+
+        if (!response.ok || !payload.ok) {
+          setFormError(
+            payload && !payload.ok && payload.error === "no_tenant"
+              ? "Your account is not assigned to a store yet."
+              : "Could not redirect to your store. Please try again.",
+          );
+          setIsPending(false);
+          return;
+        }
+
+        window.location.assign(payload.redirectUrl);
       } else {
         setIsPending(false);
       }
@@ -52,7 +78,7 @@ function LoginForm() {
         <div className="space-y-2 text-center">
           <h1 className="text-2xl font-semibold">Sign in</h1>
           <p className="text-sm text-muted-foreground">
-            Use your email and password to access the vendor dashboard.
+            Use your email and password to access your store dashboard.
           </p>
         </div>
 

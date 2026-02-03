@@ -8,15 +8,7 @@ import { loadStoreConfig } from "@/lib/store/config-service";
 import { getTenantDbContext } from "@/lib/tenant/tenant-db-context";
 import { notFound } from "next/navigation";
 
-type StorefrontPageProps = {
-  params: Promise<{ slug: string }>;
-};
-
-export default async function StorefrontPage({ params }: StorefrontPageProps) {
-  const { slug } = await params;
-  // This route is kept only for backward compatibility. Tenant resolution is host-based.
-  // The `slug` param is ignored intentionally.
-  void slug;
+export default async function StorefrontPage() {
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
   if (!config.published) {
     notFound();
@@ -37,3 +29,4 @@ export default async function StorefrontPage({ params }: StorefrontPageProps) {
 
   return <StorefrontView config={config} products={products} />;
 }
+

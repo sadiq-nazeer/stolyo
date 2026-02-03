@@ -1,10 +1,10 @@
-import { SettingsForm } from "@/app/vendor/settings/settings-form";
+import { SettingsForm } from "@/app/store/settings/settings-form";
 import { defaultStoreConfig } from "@/lib/store/config";
 import { loadStoreConfig } from "@/lib/store/config-service";
 import { requireTenantAccess } from "@/lib/tenant/access";
 import { notFound, redirect } from "next/navigation";
 
-export default async function VendorSettingsPage() {
+export default async function StoreSettingsPage() {
   const access = await requireTenantAccess(["OWNER", "ADMIN"]);
   if (!access.ok) {
     if (access.reason === "unauthorized") {
@@ -16,8 +16,14 @@ export default async function VendorSettingsPage() {
   const config = (await loadStoreConfig()) ?? defaultStoreConfig;
 
   return (
-    <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-10">
+    <div className="space-y-6">
+      <div className="space-y-1">
+        <h1 className="text-2xl font-semibold">Settings</h1>
+        <p className="text-sm text-muted-foreground">
+          Control logo, imagery, colors, sizing, links, and storefront visibility.
+        </p>
+      </div>
       <SettingsForm initialConfig={config} />
-    </main>
+    </div>
   );
 }

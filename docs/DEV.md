@@ -1,13 +1,13 @@
- # WARP.md
+ # dev.md
 
-This file provides guidance to WARP (warp.dev) when working with code in this repository.
+This file provides guidance to dev when working with code in this repository.
 
 ## Project Overview
 
-**Stolyo** is a multi-tenant SaaS e-commerce platform built with Next.js 14 (App Router), enabling vendors to create fully isolated stores with custom domains/subdomains. The platform uses schema-per-tenant PostgreSQL architecture for complete data isolation.
+**Stolyo** is a multi-tenant SaaS e-commerce platform built with Next.js 16 (App Router), enabling stores to create fully isolated storefronts with custom domains/subdomains. The platform uses schema-per-tenant PostgreSQL architecture for complete data isolation.
 
 ### Tech Stack Core
-- **Next.js 14** with App Router
+- **Next.js 16** with App Router
 - **Prisma** for database ORM and migrations
 - **NextAuth v5 (beta)** for authentication (JWT + Credentials + Email providers)
 - **PostgreSQL** with schema-per-tenant architecture
@@ -36,6 +36,13 @@ pnpm start
 pnpm lint
 ```
 
+## UI / UX Engineering Standards (IMPORTANT)
+
+- **Mobile-first**: every UI page must be usable on small screens.
+- **Responsive layouts**: pages must adapt cleanly across breakpoints (no broken overflow, clipped content, or inaccessible actions).
+- **Dashboard consistency**: store dashboard pages under `app/store/*` should share a cohesive layout with a **side navigation menu for each section** (Settings, Products, Orders, Customers, Categories, etc.), designed to be **appealing** and **mobile friendly** (collapsible/drawer nav on small screens).
+- **Implementation**: the dashboard shell lives in `app/store/layout.tsx` (see `components/store-dashboard/store-shell.tsx`).
+
 ### Database Management
 ```powershell
 # Generate Prisma Client (required after schema changes)
@@ -52,6 +59,40 @@ pnpm prisma migrate reset
 
 # Open Prisma Studio (database GUI)
 pnpm prisma studio
+```
+
+### DB migration workflow (Docker + demo tenant)
+
+There are **two layers** of “migrations” in this codebase:
+
+- **Global DB (Prisma-managed)**: `Tenant`, `Domain`, `User`, `UserTenant`, NextAuth tables
+- **Tenant schemas (template-managed)**: per-tenant schemas like `t_demo` (tables like `products`, `orders`, etc.)
+
+Recommended dev flow (typical):
+
+```powershell
+# 1) Ensure Docker DB is running
+docker-compose up -d
+
+# 2) If prisma/schema.prisma changed (global tables)
+pnpm prisma migrate dev
+
+# 3) If prisma/tenant-template.sql changed (tenant tables/columns)
+pnpm tsx scripts/migrate-tenants.ts
+```
+
+Optional (re-seed demo tenant + localhost domain mapping):
+
+```powershell
+pnpm tsx scripts/seed.ts
+```
+
+Full reset (dev only, destroys data):
+
+```powershell
+pnpm prisma migrate reset
+pnpm tsx scripts/seed.ts
+pnpm tsx scripts/migrate-tenants.ts
 ```
 
 ### Docker Development
@@ -107,9 +148,10 @@ Each tenant (store) operates in its own PostgreSQL schema, providing complete da
 
 The tenant resolution flow spans multiple files and is critical to understand:
 
-1. **`middleware.ts`**: 
-   - Extracts subdomain from request hostname
+1. **`proxy.ts`** (Next.js 16+ convention): 
+   - Extracts tenant hostname/subdomain from the request hostname
    - Sets `x-tenant-subdomain` and `x-tenant-hostname` headers
+   - Rewrites tenant-domain `/` to the internal storefront route (`/storefront`)
    - Runs on every request (except static assets)
 
 2. **`lib/tenant/tenant-resolver.ts`** (`resolveTenantByHost`):
@@ -142,7 +184,7 @@ The tenant resolution flow spans multiple files and is critical to understand:
 - **Main config**: `auth.config.ts` - Providers, callbacks, adapter configuration
 - **Auth instance**: `auth.ts` - Exports `handlers`, `auth`, `signIn`, `signOut`
 - **Auth route**: `app/api/auth/[...nextauth]/route.ts` (must exist for NextAuth handlers)
-- **Middleware**: `middleware.ts` handles tenant resolution (auth is separate)
+- **Proxy**: `proxy.ts` handles tenant resolution (auth is separate)
 
 ### Providers Configured
 1. **Credentials**: Email + password with bcrypt verification
@@ -198,8 +240,8 @@ The tenant resolution flow spans multiple files and is critical to understand:
 - **`api/`**: API routes
   - `api/auth/[...nextauth]/` - NextAuth handlers
   - `api/tenants/` - Tenant management endpoints
-- **`storefront/[slug]/`**: Dynamic storefront pages (per-tenant stores)
-- **`vendor/settings/`**: Vendor dashboard settings page
+- **`storefront/`**: Tenant storefront routes (host-based; may include legacy slug route)
+- **`store/`**: Store dashboard routes (tenant admin UI)
 
 ### Library Code (`lib/`)
 - **`db/`**: Database clients and utilities
@@ -421,9 +463,17 @@ pnpm prisma generate
 3. Ensure Socket.IO server initialized (check server logs)
 
 ### Tenant not resolving
-1. Check middleware is running (should set `x-tenant-subdomain` header)
+1. Check proxy is running (should set `x-tenant-hostname` header)
 2. Verify tenant exists in database: `pnpm prisma studio`
 3. Check hostname matches Domain or Tenant slug
+
+### Next.js proxy vs middleware (common dev-server crash)
+If you see:
+
+- `The \"middleware\" file convention is deprecated. Please use \"proxy\" instead.`
+- `Both middleware file \"./middleware.ts\" and proxy file \"./proxy.ts\" are detected. Please use \"./proxy.ts\" only.`
+
+Then **delete `middleware.ts`** and implement all request header/rewrite logic in **`proxy.ts`** only.
 
 ### Next.js build errors
 1. Run `pnpm prisma generate` first

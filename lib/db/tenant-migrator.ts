@@ -24,3 +24,16 @@ export const ensureTenantSchema = async (schemaName: string) => {
     await prisma.$executeRawUnsafe(statement);
   }
 };
+
+export const migrateAllTenantSchemas = async () => {
+  const tenants = await prisma.tenant.findMany({
+    select: { schemaName: true, slug: true },
+    orderBy: { createdAt: "asc" },
+  });
+
+  for (const tenant of tenants) {
+    await ensureTenantSchema(tenant.schemaName);
+  }
+
+  return { migrated: tenants.length };
+};
